@@ -8,27 +8,45 @@ import android.security.keystore.KeyProperties;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 
-import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.KeyStoreException;
 
-public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKeyStoreService{
-    
-    
+public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKeyStoreService {
+
+
     @TargetApi(Build.VERSION_CODES.M)
     @Override
-    public void createKey() throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public boolean createKey(String alias) {
+        try {
+            if (keyStore.containsAlias(alias)) {
+                return true;
+            }
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+            return false;
+        }
+        if (config == null || config.context == null) {
+            return false;
+        }
+        defaultAlias = alias;
+        try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator
                     .getInstance(KeyProperties.KEY_ALGORITHM_RSA, BaseKeyStoreService.KEYSTORE_PROVIDER);
             KeyGenParameterSpec keyGenParameterSpec = new KeyGenParameterSpec
-                    .Builder(keyStoreAlias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                    .Builder(defaultAlias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                     .setUserAuthenticationRequired(false)
                     .build();
             keyPairGenerator.initialize(keyGenParameterSpec);
             keyPairGenerator.generateKeyPair();
+            keyPair = keyPairGenerator.genKeyPair();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -37,8 +55,7 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKe
     }
 
     @Override
-    public boolean encrypt(String key, String value, EncryptCallback callback) {
-        return false;
+    public void encrypt(String key, String value, EncryptCallback callback) {
     }
 
     @Override
