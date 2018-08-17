@@ -25,4 +25,6 @@ public abstract class BaseKeyStoreService {
             e.printStackTrace();
         }
     }
+    
+    void authFinger(){}
 }

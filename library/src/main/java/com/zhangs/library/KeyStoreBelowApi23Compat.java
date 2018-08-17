@@ -2,8 +2,8 @@ package com.zhangs.library;
 
 import android.security.KeyPairGeneratorSpec;
 
-import com.zhangs.library.callback.AuthCallback;
 import com.zhangs.library.callback.DecryptCallback;
+import com.zhangs.library.callback.EncryptCallback;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -38,14 +38,15 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKe
         keyPairGenerator.generateKeyPair();
     }
 
+
     @Override
-    public boolean encrypt(String key, String value) {
-        return false;
+    public void authFinger() {
+
     }
 
     @Override
-    public void auth(AuthCallback callback) {
-
+    public boolean encrypt(String key, String value, EncryptCallback callback) {
+        return false;
     }
 
     @Override

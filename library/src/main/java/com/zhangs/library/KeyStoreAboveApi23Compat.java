@@ -5,8 +5,8 @@ import android.os.Build;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 
-import com.zhangs.library.callback.AuthCallback;
 import com.zhangs.library.callback.DecryptCallback;
+import com.zhangs.library.callback.EncryptCallback;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
@@ -25,20 +25,20 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKe
                     .Builder(keyStoreAlias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-                    .setUserAuthenticationRequired(config.authRequried)
+                    .setUserAuthenticationRequired(false)
                     .build();
             keyPairGenerator.initialize(keyGenParameterSpec);
             keyPairGenerator.generateKeyPair();
     }
 
+
     @Override
-    public boolean encrypt(String key, String value) {
-        return false;
+    public void authFinger() {
     }
 
     @Override
-    public void auth(AuthCallback callback) {
-
+    public boolean encrypt(String key, String value, EncryptCallback callback) {
+        return false;
     }
 
     @Override
