@@ -17,8 +17,9 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKe
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     public boolean createKey(String alias) {
+        this.alias = alias;
         try {
-            if (keyStore.containsAlias(alias)) {
+            if (keyStore.containsAlias(this.alias)) {
                 return true;
             }
         } catch (KeyStoreException e) {
@@ -28,12 +29,11 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKe
         if (config == null || config.context == null) {
             return false;
         }
-        defaultAlias = alias;
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator
                     .getInstance(KeyProperties.KEY_ALGORITHM_RSA, BaseKeyStoreService.KEYSTORE_PROVIDER);
             KeyGenParameterSpec keyGenParameterSpec = new KeyGenParameterSpec
-                    .Builder(defaultAlias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                    .Builder(this.alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                     .setUserAuthenticationRequired(false)
@@ -50,9 +50,6 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKe
     }
 
 
-    @Override
-    public void authFinger() {
-    }
 
     @Override
     public void encrypt(String key, String value, EncryptCallback callback) {

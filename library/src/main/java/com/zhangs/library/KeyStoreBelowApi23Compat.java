@@ -2,7 +2,6 @@ package com.zhangs.library;
 
 import android.security.KeyPairGeneratorSpec;
 import android.text.TextUtils;
-import android.util.Base64;
 
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
@@ -10,19 +9,17 @@ import com.zhangs.library.callback.EncryptCallback;
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;
 import java.security.KeyStoreException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Calendar;
 
-import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
 
 public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKeyStoreService{
 
     @Override
     public boolean createKey(String alias)  {
+        this.alias = alias;
         try {
-            if (keyStore.containsAlias(alias)){
+            if (keyStore.containsAlias(this.alias)){
                 return true;
             }
         } catch (KeyStoreException e) {
@@ -32,7 +29,6 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKe
         if (config==null||config.context==null){
             return false;
         }
-        defaultAlias = alias;
         Calendar start = Calendar.getInstance();
         Calendar end = Calendar.getInstance();
         end.add(Calendar.YEAR, 30);
@@ -56,11 +52,6 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKe
         return true;
     }
 
-
-    @Override
-    public void authFinger() {
-
-    }
 
     @Override
     public void encrypt(String key, String value, EncryptCallback callback) {
@@ -105,18 +96,4 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKe
         }
     }
 
-    private String encryptRSA(byte[] plainText) throws Exception {
-        PublicKey publicKey = keyStore.getCertificate(defaultAlias).getPublicKey();
-        Cipher cipher = Cipher.getInstance(RSA_MODE);
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] encryptedByte = cipher.doFinal(plainText);
-        return Base64.encodeToString(encryptedByte, Base64.DEFAULT);
-    }
-    private byte[] decryptRSA(String encryptedText) throws Exception {
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey(defaultAlias, null);
-        Cipher cipher = Cipher.getInstance(RSA_MODE);
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        byte[] encryptedBytes = Base64.decode(encryptedText, Base64.DEFAULT);
-        return cipher.doFinal(encryptedBytes);
-    }
 }
