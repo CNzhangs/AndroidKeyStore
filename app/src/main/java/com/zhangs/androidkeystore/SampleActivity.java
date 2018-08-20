@@ -7,6 +7,13 @@ import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.zhangs.library.IKeyStoreService;
+import com.zhangs.library.KeyStoreHelper;
+import com.zhangs.library.callback.DecryptCallback;
+import com.zhangs.library.callback.EncryptCallback;
+import com.zhangs.library.model.ErrorMsg;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,23 +38,60 @@ public class SampleActivity extends Activity {
     Button btnDecrypt;
     @BindView(R.id.tv_result)
     TextView tvResult;
-
+    private int type;
+    private IKeyStoreService keyStoreService  = new KeyStoreHelper();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
         ButterKnife.bind(this);
+        type = getIntent().getIntExtra(TYPE,0);
+        if (type==0){
+            Toast.makeText(this,"参数有误",Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
 
     @OnClick(R.id.btn_encrypt)
     void onEncrypt(){
+        String data = etData.getText().toString();
+        keyStoreService.encrypt("Password", data, new EncryptCallback() {
+            @Override
+            public void onStart() {
 
+            }
+
+            @Override
+            public void onSuccess(String result) {
+
+            }
+
+            @Override
+            public void onFail(ErrorMsg msg) {
+
+            }
+        });
     }
 
     @OnClick(R.id.btn_decrypt)
     void onDecrypt(){
+        keyStoreService.decrypt("Password", new DecryptCallback() {
+            @Override
+            public void onStart() {
 
+            }
+
+            @Override
+            public void onSuccess(String data) {
+
+            }
+
+            @Override
+            public void onFail(ErrorMsg msg) {
+
+            }
+        });
     }
 
 }

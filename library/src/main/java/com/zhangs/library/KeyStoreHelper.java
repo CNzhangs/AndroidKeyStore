@@ -12,7 +12,7 @@ import java.security.NoSuchProviderException;
 
 public class KeyStoreHelper implements IKeyStoreService{
     IKeyStoreService keyStoreService;
-    KeyStoreHelper(){
+    public KeyStoreHelper(){
         if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M){
             keyStoreService = new KeyStoreBelowApi23Compat();
         }else {
