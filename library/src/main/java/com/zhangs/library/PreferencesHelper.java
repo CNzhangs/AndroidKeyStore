@@ -25,11 +25,11 @@ public class PreferencesHelper {
         return instances;
     }
 
-    public static void save(String key, String value) {
+    public  void save(String key, String value) {
         preferences.edit().putString(key,value).apply();
     }
 
-    public static String get(String key) {
+    public  String get(String key) {
         return preferences.getString(key,"");
     }
 }
