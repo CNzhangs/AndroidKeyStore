@@ -2,6 +2,7 @@ package com.zhangs.library;
 
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
+import com.zhangs.library.model.Config;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
@@ -17,6 +18,7 @@ public interface IKeyStoreService {
      */
     boolean createKey(String alias) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, KeyStoreException;
 
+    void setConfig(Config config);
     /**
      * 加密数据
      *

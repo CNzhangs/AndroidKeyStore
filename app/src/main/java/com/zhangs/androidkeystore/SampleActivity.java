@@ -3,6 +3,7 @@ package com.zhangs.androidkeystore;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -10,11 +11,17 @@ import android.widget.Toast;
 
 import com.zhangs.library.IKeyStoreService;
 import com.zhangs.library.KeyStoreHelper;
+import com.zhangs.library.LogUtils;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
+import com.zhangs.library.model.Config;
 import com.zhangs.library.model.ErrorMsg;
 
-import androidx.annotation.Nullable;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -50,6 +57,13 @@ public class SampleActivity extends Activity {
             Toast.makeText(this,"参数有误",Toast.LENGTH_SHORT).show();
             finish();
         }
+        try {
+            keyStoreService.setConfig(new Config(this.getApplicationContext()));
+            boolean create =  keyStoreService.createKey("MyTest");
+            LogUtils.e("create keystore :"+create);
+        } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | KeyStoreException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -64,12 +78,12 @@ public class SampleActivity extends Activity {
 
             @Override
             public void onSuccess(String result) {
-
+                tvResult.setText(result);
             }
 
             @Override
             public void onFail(ErrorMsg msg) {
-
+                tvResult.setText("Exception:"+msg.toString());
             }
         });
     }
@@ -84,12 +98,12 @@ public class SampleActivity extends Activity {
 
             @Override
             public void onSuccess(String data) {
-
+                tvResult.setText(data);
             }
 
             @Override
             public void onFail(ErrorMsg msg) {
-
+                tvResult.setText("Exception:"+msg.toString());
             }
         });
     }

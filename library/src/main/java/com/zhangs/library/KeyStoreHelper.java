@@ -4,6 +4,7 @@ import android.os.Build;
 
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
+import com.zhangs.library.model.Config;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStoreException;
@@ -23,6 +24,11 @@ public class KeyStoreHelper implements IKeyStoreService{
     @Override
     public boolean createKey(String alias) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, KeyStoreException {
         return keyStoreService.createKey(alias);
+    }
+
+    @Override
+    public void setConfig(Config config) {
+        keyStoreService.setConfig(config);
     }
 
     @Override

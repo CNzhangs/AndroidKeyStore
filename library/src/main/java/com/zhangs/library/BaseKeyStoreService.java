@@ -11,10 +11,10 @@ import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 
-public abstract class BaseKeyStoreService {
+public abstract class BaseKeyStoreService  implements IKeyStoreService {
     static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
     static final String RSA_MODE = "RSA/ECB/PKCS1Padding";
-    
+
     KeyStore keyStore;
     String alias ="";
     Config config;
@@ -23,9 +23,16 @@ public abstract class BaseKeyStoreService {
     BaseKeyStoreService() {
         try {
             keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
+            LogUtils.e("create keystore.");
         } catch (Exception e) {
+            LogUtils.e("create keystore failed.");
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
     protected String encryptRSA(byte[] plainText) throws Exception {

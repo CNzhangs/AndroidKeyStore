@@ -6,25 +6,30 @@ import android.text.TextUtils;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyPairGenerator;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Calendar;
 
 import javax.security.auth.x500.X500Principal;
 
-public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKeyStoreService{
-
+public class KeyStoreBelowApi23Compat extends BaseKeyStoreService {
     @Override
     public boolean createKey(String alias)  {
         this.alias = alias;
         try {
+            keyStore.load(null);
             if (keyStore.containsAlias(this.alias)){
                 return true;
             }
         } catch (KeyStoreException e) {
             e.printStackTrace();
             return false;
+        } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
         }
         if (config==null||config.context==null){
             return false;
@@ -51,6 +56,7 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService implements IKe
         }
         return true;
     }
+
 
 
     @Override

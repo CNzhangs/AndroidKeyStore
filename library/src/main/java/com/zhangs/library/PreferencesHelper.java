@@ -2,8 +2,8 @@ package com.zhangs.library;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
-import androidx.annotation.NonNull;
 
 public class PreferencesHelper {
     private final static String PREFERENCES_NAME = "SP_KEYSTORE";
@@ -25,11 +25,11 @@ public class PreferencesHelper {
         return instances;
     }
 
-    public  void save(String key, String value) {
+    public  static void save(String key, String value) {
         preferences.edit().putString(key,value).apply();
     }
 
-    public  String get(String key) {
+    public  static String get(String key) {
         return preferences.getString(key,"");
     }
 }

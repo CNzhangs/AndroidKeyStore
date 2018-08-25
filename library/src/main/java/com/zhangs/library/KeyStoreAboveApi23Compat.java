@@ -11,7 +11,7 @@ import com.zhangs.library.callback.EncryptCallback;
 import java.security.KeyPairGenerator;
 import java.security.KeyStoreException;
 
-public class KeyStoreAboveApi23Compat extends BaseKeyStoreService implements IKeyStoreService {
+public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
 
 
     @TargetApi(Build.VERSION_CODES.M)
