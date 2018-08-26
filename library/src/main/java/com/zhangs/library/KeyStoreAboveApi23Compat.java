@@ -8,8 +8,11 @@ import android.security.keystore.KeyProperties;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 
+import java.io.IOException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
 
@@ -19,12 +22,15 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
     public boolean createKey(String alias) {
         this.alias = alias;
         try {
+            keyStore.load(null);
             if (keyStore.containsAlias(this.alias)) {
                 return true;
             }
         } catch (KeyStoreException e) {
             e.printStackTrace();
             return false;
+        } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
         }
         if (config == null || config.context == null) {
             return false;
@@ -36,11 +42,10 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
                     .Builder(this.alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-                    .setUserAuthenticationRequired(false)
+                    .setUserAuthenticationRequired(config.authRequried)
                     .build();
             keyPairGenerator.initialize(keyGenParameterSpec);
             keyPairGenerator.generateKeyPair();
-            keyPair = keyPairGenerator.genKeyPair();
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -53,10 +58,19 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
 
     @Override
     public void encrypt(String key, String value, EncryptCallback callback) {
+        if (config.authRequried){
+
+        }else {
+            super.encrypt(key,value,callback);
+        }
     }
 
     @Override
     public void decrypt(String key, DecryptCallback callback) {
+        if (config.authRequried){
 
+        }else {
+            super.decrypt(key,callback);
+        }
     }
 }

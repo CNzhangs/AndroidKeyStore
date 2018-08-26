@@ -58,7 +58,9 @@ public class SampleActivity extends Activity {
             finish();
         }
         try {
-            keyStoreService.setConfig(new Config(this.getApplicationContext()));
+            Config config = new Config(this.getApplicationContext());
+            config.authRequried = false;
+            keyStoreService.setConfig(config);
             boolean create =  keyStoreService.createKey("MyTest");
             LogUtils.e("create keystore :"+create);
         } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | KeyStoreException e) {

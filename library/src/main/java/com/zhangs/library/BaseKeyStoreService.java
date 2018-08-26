@@ -1,10 +1,12 @@
 package com.zhangs.library;
 
+import android.text.TextUtils;
 import android.util.Base64;
 
+import com.zhangs.library.callback.DecryptCallback;
+import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
 
-import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -18,7 +20,6 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
     KeyStore keyStore;
     String alias ="";
     Config config;
-    KeyPair keyPair;
 
     BaseKeyStoreService() {
         try {
@@ -34,6 +35,50 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
     public void setConfig(Config config) {
         this.config = config;
     }
+
+    @Override
+    public void encrypt(String key, String value, EncryptCallback callback) {
+        callback.onStart();
+        if (TextUtils.isEmpty(key)||TextUtils.isEmpty(value)){
+            callback.onFail(null);
+            return;
+        }
+        byte[] data = value.getBytes();
+        try {
+            String encryptResult = encryptRSA(data);
+            if (TextUtils.isEmpty(encryptResult)){
+                callback.onFail(null);
+                return;
+            }
+            PreferencesHelper.save(key,encryptResult);
+            callback.onSuccess(encryptResult);
+        } catch (Exception e) {
+            e.printStackTrace();
+            callback.onFail(null);
+        }
+    }
+
+    @Override
+    public void decrypt(String key, DecryptCallback callback) {
+        callback.onStart();
+        String decryptData = PreferencesHelper.get(key);
+        if (TextUtils.isEmpty(decryptData)){
+            callback.onFail(null);
+            return;
+        }
+        try {
+            byte[] decryptResult = decryptRSA(decryptData);
+            if (decryptResult!=null&&decryptResult.length>0){
+                callback.onSuccess(new String(decryptResult));
+            }else {
+                callback.onFail(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            callback.onFail(null);
+        }
+    }
+
 
     protected String encryptRSA(byte[] plainText) throws Exception {
         PublicKey publicKey = keyStore.getCertificate(alias).getPublicKey();
