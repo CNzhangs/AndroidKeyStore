@@ -7,6 +7,7 @@ import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
 
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -18,12 +19,14 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
     static final String RSA_MODE = "RSA/ECB/PKCS1Padding";
 
     KeyStore keyStore;
+    Cipher cipher;
+    KeyPair keyPair;
     String alias ="";
     Config config;
-
     BaseKeyStoreService() {
         try {
             keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
+            cipher = Cipher.getInstance(RSA_MODE);
             LogUtils.e("create keystore.");
         } catch (Exception e) {
             LogUtils.e("create keystore failed.");
@@ -81,17 +84,22 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
 
 
     protected String encryptRSA(byte[] plainText) throws Exception {
-        PublicKey publicKey = keyStore.getCertificate(alias).getPublicKey();
-        Cipher cipher = Cipher.getInstance(RSA_MODE);
+        checkKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encryptedByte = cipher.doFinal(plainText);
         return Base64.encodeToString(encryptedByte, Base64.DEFAULT);
     }
     protected byte[] decryptRSA(String encryptedText) throws Exception {
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey(alias, null);
-        Cipher cipher = Cipher.getInstance(RSA_MODE);
+        checkKeyPair();
+        PrivateKey privateKey = keyPair.getPrivate();
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] encryptedBytes = Base64.decode(encryptedText, Base64.DEFAULT);
         return cipher.doFinal(encryptedBytes);
+    }
+    protected void checkKeyPair() throws Exception {
+        if (keyPair ==null){
+            throw new Exception("you must call createKey() method before");
+        }
     }
 }

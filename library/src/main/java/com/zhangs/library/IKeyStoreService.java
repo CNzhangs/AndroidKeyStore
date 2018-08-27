@@ -1,5 +1,8 @@
 package com.zhangs.library;
 
+import android.Manifest;
+import android.support.annotation.RequiresPermission;
+
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
@@ -27,7 +30,9 @@ public interface IKeyStoreService {
      * @param callback 加密回调
      * @return
      */
+    @RequiresPermission(Manifest.permission.USE_FINGERPRINT)
     void encrypt(String key, String value, EncryptCallback callback);
 
+    @RequiresPermission(Manifest.permission.USE_FINGERPRINT)
     void decrypt(String key, DecryptCallback callback);
 }

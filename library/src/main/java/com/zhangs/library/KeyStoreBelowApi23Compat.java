@@ -47,7 +47,12 @@ public class KeyStoreBelowApi23Compat extends BaseKeyStoreService {
                     .setEndDate(end.getTime())
                     .build();
             keyPairGenerator.initialize(spec);
-            keyPairGenerator.generateKeyPair();
+            keyPair = keyPairGenerator.generateKeyPair();
+            if (keyPair==null){
+                LogUtils.e("key pair is null");
+            }else {
+                LogUtils.e("key pair is not null");
+            }
         }catch (Exception e){
             e.printStackTrace();
             return false;

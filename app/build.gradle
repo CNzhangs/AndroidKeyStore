@@ -28,10 +28,13 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation project(':library')
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation "io.reactivex.rxjava2:rxjava:2.2.1"
 }
 repositories {
 //    maven{url 'https://dl-ssl.google.com/dl/android/maven2/'}
     google()
     mavenCentral()
     jcenter()
+    maven { url 'https://jitpack.io' }
 }
