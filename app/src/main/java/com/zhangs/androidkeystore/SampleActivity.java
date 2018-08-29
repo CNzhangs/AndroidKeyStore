@@ -64,7 +64,7 @@ public class SampleActivity extends FragmentActivity {
         }
         try {
             Config config = new Config(this.getApplicationContext());
-            config.authRequried = false;
+            config.authRequired = false;
             keyStoreService.setConfig(config);
             boolean create =  keyStoreService.createKey("MyTest");
             LogUtils.e("create keystore :"+create);

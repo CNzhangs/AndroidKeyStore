@@ -10,6 +10,7 @@ import android.util.Base64;
 
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
+import com.zhangs.library.model.Constants;
 import com.zhangs.library.model.ErrorMsg;
 
 import java.io.IOException;
@@ -50,13 +51,13 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
                     .Builder(this.alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-                    .setUserAuthenticationRequired(config.authRequried)
+                    .setUserAuthenticationRequired(config.authRequired)
                     .build();
             keyPairGenerator.initialize(keyGenParameterSpec);
             keyPair = keyPairGenerator.generateKeyPair();
-            if (keyPair==null){
+            if (keyPair == null) {
                 LogUtils.e("key pair is null");
-            }else {
+            } else {
                 LogUtils.e("key pair is not null");
             }
         } catch (Exception e) {
@@ -80,7 +81,7 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
         @Override
         public void onAuthenticationError(int errMsgId, CharSequence errString) {
             super.onAuthenticationError(errMsgId, errString);
-            callBack.onFail(new ErrorMsg());
+            callBack.onFail(ErrorMsg.create(Constants.Error.ERROR_FINGER_AUTH, errString.toString()));
         }
 
         @Override
@@ -93,28 +94,30 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
             super.onAuthenticationSucceeded(result);
             try {
                 Cipher cipher = result.getCryptoObject().getCipher();
-                String data  =Base64.encodeToString(cipher.doFinal(value.getBytes()), Base64.DEFAULT);
+                String data = Base64.encodeToString(cipher.doFinal(value.getBytes()), Base64.DEFAULT);
                 if (TextUtils.isEmpty(data)) {
-                    callBack.onFail(new ErrorMsg());
+                    callBack.onFail(ErrorMsg.create(Constants.Error.ERROR_ENCRYPT,"Encrypt data failed"));
                 } else {
                     PreferencesHelper.save(key, data);
                     callBack.onSuccess(data);
                 }
             } catch (BadPaddingException | IllegalBlockSizeException e) {
                 e.printStackTrace();
+                callBack.onFail(ErrorMsg.create(Constants.Error.ERROR_ENCRYPT,"Encrypt data catch exception -> BadPaddingException | IllegalBlockSizeException."));
             }
         }
 
         @Override
         public void onAuthenticationFailed() {
             super.onAuthenticationFailed();
-            callBack.onFail(new ErrorMsg());
+            callBack.onFail(ErrorMsg.create(Constants.Error.ERROR_FINGER_AUTH,"Encrypt data : onAuthenticationFailed"));
         }
     }
+
     @Override
     public void encrypt(String key, String value, EncryptCallback callback) {
 
-        if (config.authRequried) {
+        if (config.authRequired) {
             encryptByFingerPrint(key, value, callback);
         } else {
             super.encrypt(key, value, callback);
@@ -148,7 +151,7 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
         @Override
         public void onAuthenticationError(int errMsgId, CharSequence errString) {
             super.onAuthenticationError(errMsgId, errString);
-            callback.onFail(new ErrorMsg());
+            callback.onFail(ErrorMsg.create(Constants.Error.ERROR_FINGER_AUTH,errString.toString()));
         }
 
         @Override
@@ -160,7 +163,7 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
         public void onAuthenticationSucceeded(FingerprintManagerCompat.AuthenticationResult result) {
             String encryptedText = PreferencesHelper.get(key);
             if (TextUtils.isEmpty(encryptedText)) {
-                callback.onFail(null);
+                callback.onFail(ErrorMsg.create(Constants.Error.ERROR_UNDEFINED,"can not find the encrypted data."));
                 return;
             }
             byte[] encryptedBytes = Base64.decode(encryptedText, Base64.DEFAULT);
@@ -168,29 +171,30 @@ public class KeyStoreAboveApi23Compat extends BaseKeyStoreService {
                 Cipher cipher = result.getCryptoObject().getCipher();
                 String data = new String(cipher.doFinal(encryptedBytes));
                 if (TextUtils.isEmpty(data)) {
-                    callback.onFail(new ErrorMsg());
+                    callback.onFail(ErrorMsg.create(Constants.Error.ERROR_DECRYPT,"Decrypt data failed."));
                 } else {
                     callback.onSuccess(data);
                 }
             } catch (BadPaddingException | IllegalBlockSizeException e) {
                 e.printStackTrace();
+                callback.onFail(ErrorMsg.create(Constants.Error.ERROR_DECRYPT,"Decrypt data failed,catch exception."));
             }
         }
 
         @Override
         public void onAuthenticationFailed() {
             super.onAuthenticationFailed();
-            callback.onFail(new ErrorMsg());
+            callback.onFail(ErrorMsg.create(Constants.Error.ERROR_FINGER_AUTH,"Decrypt data failed:onAuthenticationFailed"));
         }
     }
 
     @Override
     public void decrypt(String key, DecryptCallback callback) {
-        if (config.authRequried) {
+        if (config.authRequired) {
             try {
                 decryptByFingerPrint(key, callback);
             } catch (Exception e) {
-                e.printStackTrace();
+                callback.onFail(ErrorMsg.create(Constants.Error.ERROR_UNDEFINED,"Decrypt data failed,catch exception:"));
             }
         } else {
             super.decrypt(key, callback);

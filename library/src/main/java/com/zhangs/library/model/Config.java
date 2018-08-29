@@ -7,15 +7,15 @@ public class Config {
         this.context = context;
     }
 
-    public Config(Context context, String alias, boolean authRequried, long expiredTime) {
+    public Config(Context context, String alias, boolean authRequired, long expiredTime) {
         this.context = context;
         this.alias = alias;
-        this.authRequried = authRequried;
+        this.authRequired = authRequired;
         this.expiredTime = expiredTime;
     }
 
     public Context context;
     public String alias = "";
-    public boolean authRequried = true;
+    public boolean authRequired = true;
     public long expiredTime = 30*1000L;
 }
