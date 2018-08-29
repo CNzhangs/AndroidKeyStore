@@ -15,16 +15,10 @@ import android.widget.Toast;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhangs.library.IKeyStoreService;
 import com.zhangs.library.KeyStoreHelper;
-import com.zhangs.library.LogUtils;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
 import com.zhangs.library.model.ErrorMsg;
-
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,13 +26,13 @@ import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
 public class SampleActivity extends FragmentActivity {
-    public final static String TYPE= "type";
-    public final static int TYPE_BELOW_23= 1;
-    public final static int TYPE_ABOVE_23= 2;
+    public final static String TYPE = "type";
+    public final static int TYPE_BELOW_23 = 1;
+    public final static int TYPE_ABOVE_23 = 2;
 
-    public static void launch(int type,Activity act ){
-        Intent intent = new Intent(act,SampleActivity.class);
-        intent.putExtra(TYPE,type);
+    public static void launch(int type, Activity act) {
+        Intent intent = new Intent(act, SampleActivity.class);
+        intent.putExtra(TYPE, type);
         act.startActivity(intent);
     }
 
@@ -51,43 +45,43 @@ public class SampleActivity extends FragmentActivity {
     @BindView(R.id.tv_result)
     TextView tvResult;
     private int type;
-    private IKeyStoreService keyStoreService  = new KeyStoreHelper();
+    private IKeyStoreService keyStoreService = new KeyStoreHelper();
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
         ButterKnife.bind(this);
-        type = getIntent().getIntExtra(TYPE,0);
-        if (type==0){
-            Toast.makeText(this,"参数有误",Toast.LENGTH_SHORT).show();
+        type = getIntent().getIntExtra(TYPE, 0);
+        if (type == 0) {
+            Toast.makeText(this, "参数有误", Toast.LENGTH_SHORT).show();
             finish();
         }
         try {
             Config config = new Config(this.getApplicationContext());
-            config.authRequired = false;
+            config.authRequired = true;
             keyStoreService.setConfig(config);
-            boolean create =  keyStoreService.createKey("MyTest");
-            LogUtils.e("create keystore :"+create);
-        } catch (NoSuchProviderException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | KeyStoreException e) {
+            keyStoreService.createKey("MyTest");
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
     @OnClick(R.id.btn_encrypt)
-    void onEncrypt(){
+    void onEncrypt() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             RxPermissions rxPermissions = new RxPermissions(this);
             rxPermissions.request(Manifest.permission.USE_FINGERPRINT)
                     .subscribe(new Consumer<Boolean>() {
                         @Override
                         public void accept(Boolean aBoolean) throws Exception {
-                            if (aBoolean){
+                            if (aBoolean) {
                                 encrypt();
                             }
                         }
                     });
-        }else {
+        } else {
             encrypt();
         }
     }
@@ -95,11 +89,6 @@ public class SampleActivity extends FragmentActivity {
     private void encrypt() {
         String data = etData.getText().toString();
         keyStoreService.encrypt("Password", data, new EncryptCallback() {
-            @Override
-            public void onStart() {
-
-            }
-
             @Override
             public void onSuccess(String result) {
                 tvResult.setText(result);
@@ -113,19 +102,19 @@ public class SampleActivity extends FragmentActivity {
     }
 
     @OnClick(R.id.btn_decrypt)
-    void onDecrypt(){
+    void onDecrypt() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             RxPermissions rxPermissions = new RxPermissions(this);
             rxPermissions.request(Manifest.permission.USE_FINGERPRINT)
                     .subscribe(new Consumer<Boolean>() {
                         @Override
                         public void accept(Boolean aBoolean) throws Exception {
-                            if (aBoolean){
+                            if (aBoolean) {
                                 decrypt();
                             }
                         }
                     });
-        }else {
+        } else {
 
             decrypt();
         }
@@ -134,18 +123,13 @@ public class SampleActivity extends FragmentActivity {
     private void decrypt() {
         keyStoreService.decrypt("Password", new DecryptCallback() {
             @Override
-            public void onStart() {
-
-            }
-
-            @Override
             public void onSuccess(String data) {
                 tvResult.setText(data);
             }
 
             @Override
             public void onFail(ErrorMsg msg) {
-                tvResult.setText("Exception:"+msg.toString());
+                tvResult.setText("Exception:" + msg.toString());
             }
         });
     }

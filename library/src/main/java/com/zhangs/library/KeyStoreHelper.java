@@ -6,11 +6,6 @@ import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-
 public class KeyStoreHelper implements IKeyStoreService{
     IKeyStoreService keyStoreService;
     public KeyStoreHelper(){
@@ -22,8 +17,8 @@ public class KeyStoreHelper implements IKeyStoreService{
     }
 
     @Override
-    public boolean createKey(String alias) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, KeyStoreException {
-        return keyStoreService.createKey(alias);
+    public void createKey(String alias) throws Exception {
+         keyStoreService.createKey(alias);
     }
 
     @Override

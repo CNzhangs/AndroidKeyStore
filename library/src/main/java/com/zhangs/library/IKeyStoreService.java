@@ -1,16 +1,8 @@
 package com.zhangs.library;
 
-import android.Manifest;
-import android.support.annotation.RequiresPermission;
-
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
-
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 
 public interface IKeyStoreService {
     /**
@@ -19,7 +11,7 @@ public interface IKeyStoreService {
      * @param alias
      * @return false则创建失败.true成功或已存在.
      */
-    boolean createKey(String alias) throws NoSuchProviderException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, KeyStoreException;
+    void createKey(String alias) throws Exception;
 
     void setConfig(Config config);
     /**
@@ -30,9 +22,12 @@ public interface IKeyStoreService {
      * @param callback 加密回调
      * @return
      */
-    @RequiresPermission(Manifest.permission.USE_FINGERPRINT)
     void encrypt(String key, String value, EncryptCallback callback);
 
-    @RequiresPermission(Manifest.permission.USE_FINGERPRINT)
+    /**
+     * 解密数据
+     * @param key 加密时保存的key值
+     * @param callback 解密回调
+     */
     void decrypt(String key, DecryptCallback callback);
 }

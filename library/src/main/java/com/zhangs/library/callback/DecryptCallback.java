@@ -3,7 +3,6 @@ package com.zhangs.library.callback;
 import com.zhangs.library.model.ErrorMsg;
 
 public interface DecryptCallback {
-    void onStart();
 
     /**
      * 解密成功回调
