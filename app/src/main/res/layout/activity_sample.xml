@@ -6,7 +6,13 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:orientation="vertical">
-
+    <EditText
+        android:id="@+id/et_key"
+        android:hint="输入加密数据的Key值"
+        android:layout_width="match_parent"
+        android:text="Key"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp" />
     <EditText
         android:id="@+id/et_data"
         android:hint="请输入需要加密的信息"

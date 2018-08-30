@@ -14,7 +14,8 @@ import android.widget.Toast;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.zhangs.library.IKeyStoreService;
-import com.zhangs.library.KeyStoreHelper;
+import com.zhangs.library.KeyStoreAboveApi23Compat;
+import com.zhangs.library.KeyStoreBelowApi23Compat;
 import com.zhangs.library.callback.DecryptCallback;
 import com.zhangs.library.callback.EncryptCallback;
 import com.zhangs.library.model.Config;
@@ -44,8 +45,10 @@ public class SampleActivity extends FragmentActivity {
     Button btnDecrypt;
     @BindView(R.id.tv_result)
     TextView tvResult;
+    @BindView(R.id.et_key)
+    EditText etKey;
     private int type;
-    private IKeyStoreService keyStoreService = new KeyStoreHelper();
+    private IKeyStoreService keyStoreService ;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,15 +56,19 @@ public class SampleActivity extends FragmentActivity {
         setContentView(R.layout.activity_sample);
         ButterKnife.bind(this);
         type = getIntent().getIntExtra(TYPE, 0);
-        if (type == 0) {
+        if (type == TYPE_ABOVE_23){
+            keyStoreService = new KeyStoreAboveApi23Compat();
+        }
+        else if (type == TYPE_BELOW_23){
+            keyStoreService = new KeyStoreBelowApi23Compat();
+        }else {
             Toast.makeText(this, "参数有误", Toast.LENGTH_SHORT).show();
             finish();
         }
         try {
             Config config = new Config(this.getApplicationContext());
-            config.authRequired = true;
             keyStoreService.setConfig(config);
-            keyStoreService.createKey("MyTest");
+            keyStoreService.createKey("KeyStore");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,8 +94,9 @@ public class SampleActivity extends FragmentActivity {
     }
 
     private void encrypt() {
+        String key = etKey.getText().toString();
         String data = etData.getText().toString();
-        keyStoreService.encrypt("Password", data, new EncryptCallback() {
+        keyStoreService.encrypt(key, data, new EncryptCallback() {
             @Override
             public void onSuccess(String result) {
                 tvResult.setText(result);
@@ -121,7 +129,8 @@ public class SampleActivity extends FragmentActivity {
     }
 
     private void decrypt() {
-        keyStoreService.decrypt("Password", new DecryptCallback() {
+        String key = etKey.getText().toString();
+        keyStoreService.decrypt(key, new DecryptCallback() {
             @Override
             public void onSuccess(String data) {
                 tvResult.setText(data);
