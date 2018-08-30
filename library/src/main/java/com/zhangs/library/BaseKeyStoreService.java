@@ -36,7 +36,6 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
         try {
             keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER);
             cipher = Cipher.getInstance(RSA_MODE);
-            LogUtils.e("create keystore.");
         } catch (Exception e) {
             LogUtils.e("create keystore failed.");
             e.printStackTrace();
@@ -122,14 +121,14 @@ public abstract class BaseKeyStoreService  implements IKeyStoreService {
     }
 
 
-    protected String encryptRSA(byte[] plainText) throws Exception {
+    private String encryptRSA(byte[] plainText) throws Exception {
         checkKeyPair();
         PublicKey publicKey = keyPair.getPublic();
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encryptedByte = cipher.doFinal(plainText);
         return Base64.encodeToString(encryptedByte, Base64.DEFAULT);
     }
-    protected byte[] decryptRSA(String encryptedText) throws Exception {
+    private byte[] decryptRSA(String encryptedText) throws Exception {
         checkKeyPair();
         PrivateKey privateKey = keyPair.getPrivate();
         cipher.init(Cipher.DECRYPT_MODE, privateKey);

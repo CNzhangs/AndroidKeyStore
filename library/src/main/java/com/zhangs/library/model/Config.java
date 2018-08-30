@@ -16,6 +16,6 @@ public class Config {
 
     public Context context;
     public String alias = "";
-    public boolean authRequired = true;
+    public boolean authRequired = false;
     public long expiredTime = 30*1000L;
 }

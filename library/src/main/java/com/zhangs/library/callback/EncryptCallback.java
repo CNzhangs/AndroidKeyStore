@@ -15,4 +15,7 @@ public interface EncryptCallback {
      * @param msg
      */
     void onFail(ErrorMsg msg);
+    /**
+     *
+     */
 }
