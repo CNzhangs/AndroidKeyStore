@@ -6,7 +6,7 @@
 ### 2.使用方式
 可参考App 部分SampleActivity中的demo代码
 加密：
-  ```
+  ```Java
   keyStoreService.encrypt(key, data, new EncryptCallback() {
               @Override
               public void onSuccess(String result) {
@@ -17,9 +17,11 @@
               public void onFail(ErrorMsg msg) {
               }
           });
-    ```
+```          
+          
 解密：
-  ```
+
+  ```Java
   keyStoreService.decrypt(key, new DecryptCallback() {
             @Override
             public void onSuccess(String data) {
@@ -30,7 +32,7 @@
             public void onFail(ErrorMsg msg) {
             }
         });
-  ```
+```
 
 ### 3.参考：
 https://blog.csdn.net/csh86277516/article/details/68926931
