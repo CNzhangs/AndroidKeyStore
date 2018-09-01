@@ -6,11 +6,11 @@
 ### 2.使用方式
 可参考App 部分SampleActivity中的demo代码
 加密：
-  ```Java
+  ```java
   keyStoreService.encrypt(key, data, new EncryptCallback() {
               @Override
               public void onSuccess(String result) {
-                  tvResult.setText(result);
+                  tvResult.setText(result); //对参数data加密成功后加密数据。
               }
 
               @Override
@@ -21,11 +21,11 @@
           
 解密：
 
-  ```Java
+  ```java
   keyStoreService.decrypt(key, new DecryptCallback() {
             @Override
             public void onSuccess(String data) {
-                tvResult.setText(data);
+                tvResult.setText(data); //对加密后的数据的解密结果
             }
 
             @Override
