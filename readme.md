@@ -1,4 +1,4 @@
-# AndKeyStore
+# AndKeyStore(完善中...)
 该library主要是为了解决Android开发中加解密数据的问题，提供**对称/非对称** 两种方式实现，并且提供Android**指纹验证**后的加解密功能。
 ### 技术原理
 1. 采用JCE的Keystore技术，实现不明文存储秘钥，而通过 keystore动态生成秘钥的方式实现加解密数据，从而达到数据安全性保证；
