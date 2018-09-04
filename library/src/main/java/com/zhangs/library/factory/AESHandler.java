@@ -1,32 +1,24 @@
 package com.zhangs.library.factory;
 
-import java.security.KeyPair;
-import java.security.spec.AlgorithmParameterSpec;
+import com.zhangs.library.model.Config;
 
 public class AESHandler extends AbsSecurityHandler {
-    public AESHandler(String alias) throws Exception{
-        super(alias);
+
+    public AESHandler(Config config) throws Exception {
+        super(config);
     }
 
     @Override
     protected String getAlgorithm() {
-        return null;
+        return "AES";
     }
 
-    @Override
-    protected String getTransformation() {
-        return null;
-    }
 
     @Override
-    protected KeyPair getExistKeyPair() {
-        return null;
+    protected void getExistKeyPair() throws Exception {
+            checkKeyStore();
     }
 
-    @Override
-    protected AlgorithmParameterSpec getKeyGenSpec() {
-        return null;
-    }
 
     @Override
     public String encrypt(String data) {

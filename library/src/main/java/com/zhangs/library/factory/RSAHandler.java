@@ -1,31 +1,34 @@
 package com.zhangs.library.factory;
 
+import android.security.keystore.KeyProperties;
+
+import com.zhangs.library.model.Config;
+
 import java.security.KeyPair;
-import java.security.spec.AlgorithmParameterSpec;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.cert.Certificate;
 
 public class RSAHandler extends AbsSecurityHandler {
-    public RSAHandler(String alias) throws Exception{
-        super(alias);
+    public RSAHandler(Config config) throws Exception {
+        super(config);
     }
+
     @Override
     protected String getAlgorithm() {
-        return null;
+        return isBelowApi23() ? "RSA" : KeyProperties.KEY_ALGORITHM_RSA;
     }
 
-    @Override
-    protected String getTransformation() {
-        return null;
-    }
 
     @Override
-    protected KeyPair getExistKeyPair() {
-        return null;
+    protected  void getExistKeyPair() throws  Exception{
+        checkKeyStore();
+        PrivateKey privateKey = (PrivateKey) keyStore.getKey(config.getAlias(), null);
+        Certificate cert = keyStore.getCertificate(config.getAlias());
+        PublicKey publicKey = cert.getPublicKey();
+        keyPair = new KeyPair(publicKey, privateKey);
     }
 
-    @Override
-    protected AlgorithmParameterSpec getKeyGenSpec() {
-        return null;
-    }
 
     @Override
     public String encrypt(String data) {
