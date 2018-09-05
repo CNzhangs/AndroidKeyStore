@@ -8,9 +8,10 @@ import android.security.keystore.KeyProperties;
 import com.zhangs.library.model.Config;
 
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Calendar;
 
@@ -18,12 +19,10 @@ import javax.crypto.Cipher;
 import javax.security.auth.x500.X500Principal;
 
 public abstract class AbsSecurityHandler implements ISecurityHandler {
-    private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
+    public static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
     Config config;
     KeyStore keyStore;
     Cipher cipher;
-    KeyPair keyPair;
-
     protected abstract String getAlgorithm();
 
     protected abstract void getExistKeyPair() throws Exception;
@@ -41,16 +40,13 @@ public abstract class AbsSecurityHandler implements ISecurityHandler {
         if (keyStore.containsAlias(alias)) {
             getExistKeyPair();
         }
-        if (keyPair != null) {
-            return;
-        }
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator
-                .getInstance(getAlgorithm(), KEYSTORE_PROVIDER);
-        keyPairGenerator.initialize(getKeyGenSpec());
-        keyPair = keyPairGenerator.generateKeyPair();
+        createKey();
     }
 
-    private AlgorithmParameterSpec getKeyGenSpec() {
+    protected void createKey() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+    }
+
+    protected AlgorithmParameterSpec getKeyGenSpec() {
         if (isBelowApi23()) {
             Calendar start = Calendar.getInstance();
             Calendar end = Calendar.getInstance();

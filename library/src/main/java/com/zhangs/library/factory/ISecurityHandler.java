@@ -6,12 +6,12 @@ public interface ISecurityHandler {
      * @param data
      * @return
      */
-    String encrypt(String data);
+    String encrypt(String data) throws Exception;
 
     /**
      * 解密数据
      * @param data
      * @return
      */
-    String decrypt(String data);
+    String decrypt(String data) throws Exception;
 }
